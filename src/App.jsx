@@ -14,6 +14,7 @@ import Weight from './pages/Weight';
 import Goals from './pages/Goals';
 import Reports from './pages/Reports';
 import History from './pages/History';
+import Rules from './pages/Rules';
 import './App.css';
 
 function AppContent() {
@@ -26,8 +27,10 @@ function AppContent() {
 
   const {
     todayData, loading, weekData, weekWaterData, allWeights, streak,
-    goals, monthData, monthDietData, monthWaterData, monthWeightData,
-    getDataForDate, getWeekReport, saveGoals,
+    goals, profile, rules, dailyChecks,
+    monthData, monthDietData, monthWaterData, monthWeightData,
+    getDataForDate, getWeekReport, saveGoals, saveProfile,
+    saveRule, deleteRule, toggleDailyCheck,
     addWorkout, deleteWorkout,
     addDiet, deleteDietEntry,
     updateWater, addWeight, deleteWeight
@@ -118,6 +121,8 @@ function AppContent() {
         return <Reports weekData={weekData} weekWaterData={weekWaterData} monthData={monthData} monthDietData={monthDietData} monthWaterData={monthWaterData} monthWeightData={monthWeightData} goals={goals} getDataForDate={getDataForDate} />;
       case 'history':
         return <History getDataForDate={getDataForDate} />;
+      case 'rules':
+        return <Rules rules={rules} dailyChecks={dailyChecks} onSaveRule={saveRule} onDeleteRule={deleteRule} onToggleCheck={toggleDailyCheck} />;
       default:
         return <Dashboard todayData={todayData} weekData={weekData} goals={goals} onNavigate={setActiveSection} />;
     }
@@ -125,7 +130,7 @@ function AppContent() {
 
   return (
     <div className="app">
-      <Header streak={streak} onLogout={logout} />
+      <Header streak={streak} onLogout={logout} profile={profile} onSaveProfile={saveProfile} />
       <main className="main-content">
         {renderSection()}
       </main>

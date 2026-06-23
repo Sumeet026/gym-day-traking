@@ -1203,32 +1203,51 @@ body {
   width: 100%;
   max-width: 480px;
   display: flex;
-  justify-content: space-around;
+  justify-content: start;
   align-items: center;
   background: rgba(15, 23, 42, 0.97);
   backdrop-filter: blur(20px);
   border-top: 1px solid var(--border);
-  padding: 0.5rem 0;
+  padding: 0.5rem 0.5rem;
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   z-index: 100;
   height: var(--nav-height);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.bottom-nav::-webkit-scrollbar {
+  height: 3px;
+  display: block;
+}
+
+.bottom-nav::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+  border-radius: 2px;
+}
+
+.bottom-nav::-webkit-scrollbar-thumb {
+  background: var(--accent-indigo);
+  border-radius: 2px;
 }
 
 .nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.2rem;
-  padding: 0.4rem 0.75rem;
+  gap: 0.15rem;
+  padding: 0.4rem 0.55rem;
   border: none;
   background: none;
   color: var(--text-muted);
   font-family: 'Poppins', sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   cursor: pointer;
   transition: all 0.2s;
   border-radius: 12px;
   position: relative;
+  flex-shrink: 0;
 }
 
 .nav-item i {
@@ -1942,4 +1961,284 @@ body {
   .workout-mini-stat {
     min-width: calc(50% - 0.25rem);
   }
+}
+
+/* ============ PROFILE BUTTON ============ */
+.profile-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-indigo);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  overflow: hidden;
+  padding: 0;
+}
+
+.profile-btn i {
+  font-size: 1.2rem;
+  color: var(--accent-indigo);
+}
+
+.profile-btn:hover {
+  border-color: var(--accent-indigo-light);
+  transform: scale(1.05);
+}
+
+.header-profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ============ PROFILE MODAL ============ */
+.profile-modal {
+  max-width: 350px;
+}
+
+.profile-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.profile-modal-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.profile-photo-section {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile-photo-wrapper {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 0 auto;
+  position: relative;
+  border: 3px solid var(--accent-indigo);
+  overflow: hidden;
+}
+
+.profile-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-photo-placeholder i {
+  font-size: 2.5rem;
+  color: var(--text-muted);
+}
+
+.profile-photo-edit {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  background: var(--accent-indigo);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.profile-photo-edit:hover {
+  background: var(--accent-indigo-light);
+  transform: scale(1.1);
+}
+
+.profile-photo-edit i {
+  font-size: 0.8rem;
+  color: white;
+}
+
+.profile-photo-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+}
+
+/* ============ RULES PAGE ============ */
+.rules-progress-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.rules-date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.rules-date i {
+  color: var(--accent-indigo);
+}
+
+.rules-progress-ring {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 0.75rem;
+  position: relative;
+}
+
+.rules-progress-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.rules-color { stroke: var(--accent-emerald); }
+
+.rules-progress-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Add Rule Form */
+.add-rule-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.add-rule-form input {
+  flex: 1;
+  padding: 0.7rem 0.9rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.add-rule-form input:focus {
+  border-color: var(--accent-indigo);
+}
+
+.add-rule-form input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Daily Rules List */
+.daily-rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.daily-rule-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.daily-rule-item:active {
+  transform: scale(0.98);
+}
+
+.daily-rule-item.checked {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.rule-checkbox {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.rule-checkbox.checked {
+  background: var(--accent-emerald);
+  border-color: var(--accent-emerald);
+}
+
+.rule-checkbox i {
+  color: white;
+  font-size: 0.75rem;
+}
+
+.daily-rule-text {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.daily-rule-item.checked .daily-rule-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+/* Streak Info */
+.streak-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.streak-info-item {
+  text-align: center;
+  padding: 0.75rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.streak-info-item i {
+  font-size: 1.2rem;
+  color: var(--accent-indigo);
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+.streak-info-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: block;
+}
+
+.streak-info-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
 }

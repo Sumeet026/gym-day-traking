@@ -52,6 +52,9 @@ export function useFirestore(userId = 'default') {
     proteinGoal: 150,
     weightGoal: null
   });
+  const [profile, setProfile] = useState({ name: '', photoUrl: '' });
+  const [rules, setRules] = useState([]);
+  const [dailyChecks, setDailyChecks] = useState([]);
 
   const today = getDateStr();
 
@@ -72,6 +75,47 @@ export function useFirestore(userId = 'default') {
         });
       }
     }, (err) => console.error('Goals error:', err));
+    return unsub;
+  }, [userId]);
+
+  // Subscribe to user profile
+  useEffect(() => {
+    const q = query(
+      collection(db, 'profiles'),
+      where('userId', '==', userId)
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      if (!snap.empty) {
+        const data = snap.docs[0].data();
+        setProfile({ name: data.name || '', photoUrl: data.photoUrl || '' });
+      }
+    }, (err) => console.error('Profile error:', err));
+    return unsub;
+  }, [userId]);
+
+  // Subscribe to rules
+  useEffect(() => {
+    const q = query(
+      collection(db, 'rules'),
+      where('userId', '==', userId)
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setRules(data);
+    }, (err) => console.error('Rules error:', err));
+    return unsub;
+  }, [userId]);
+
+  // Subscribe to daily checks
+  useEffect(() => {
+    const q = query(
+      collection(db, 'dailyChecks'),
+      where('userId', '==', userId)
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setDailyChecks(data);
+    }, (err) => console.error('Daily checks error:', err));
     return unsub;
   }, [userId]);
 
@@ -417,6 +461,58 @@ export function useFirestore(userId = 'default') {
     await deleteDoc(doc(db, 'weights', id));
   };
 
+  // Save profile
+  const saveProfile = async (profileData) => {
+    const q = query(
+      collection(db, 'profiles'),
+      where('userId', '==', userId)
+    );
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      await updateDoc(doc(db, 'profiles', snap.docs[0].id), profileData);
+    } else {
+      await addDoc(collection(db, 'profiles'), {
+        userId,
+        ...profileData,
+        createdAt: new Date().toISOString()
+      });
+    }
+  };
+
+  // Save rule
+  const saveRule = async (ruleData) => {
+    await addDoc(collection(db, 'rules'), {
+      userId,
+      ...ruleData
+    });
+  };
+
+  // Delete rule
+  const deleteRule = async (id) => {
+    await deleteDoc(doc(db, 'rules', id));
+  };
+
+  // Toggle daily check
+  const toggleDailyCheck = async (checkData) => {
+    const q = query(
+      collection(db, 'dailyChecks'),
+      where('userId', '==', userId),
+      where('ruleId', '==', checkData.ruleId),
+      where('date', '==', checkData.date)
+    );
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      await updateDoc(doc(db, 'dailyChecks', snap.docs[0].id), {
+        completed: checkData.completed
+      });
+    } else {
+      await addDoc(collection(db, 'dailyChecks'), {
+        userId,
+        ...checkData
+      });
+    }
+  };
+
   return {
     todayData,
     loading,
@@ -425,6 +521,9 @@ export function useFirestore(userId = 'default') {
     allWeights,
     streak,
     goals,
+    profile,
+    rules,
+    dailyChecks,
     monthData,
     monthDietData,
     monthWaterData,
@@ -432,6 +531,10 @@ export function useFirestore(userId = 'default') {
     getDataForDate,
     getWeekReport,
     saveGoals,
+    saveProfile,
+    saveRule,
+    deleteRule,
+    toggleDailyCheck,
     addWorkout,
     deleteWorkout,
     addDiet,

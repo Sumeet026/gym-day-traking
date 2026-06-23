@@ -5,7 +5,7 @@ import DeleteModal from '../components/DeleteModal';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
-export default function Weight({ todayData, allWeights, addWeight, deleteWeight, onToast }) {
+export default function Weight({ todayData, allWeights, addWeight, deleteWeight, onToast, goals }) {
   const [newWeight, setNewWeight] = useState('');
   const [deleteId, setDeleteId] = useState(null);
 
@@ -70,6 +70,17 @@ export default function Weight({ todayData, allWeights, addWeight, deleteWeight,
           <span className="weight-value">{currentWeight || '--'}</span>
           <span className="weight-unit">kg</span>
         </div>
+        {goals?.weightGoal && currentWeight && (
+          <div className="weight-goal-info">
+            Target: {goals.weightGoal}kg | 
+            {currentWeight > goals.weightGoal 
+              ? ` ${(currentWeight - goals.weightGoal).toFixed(1)}kg to go`
+              : currentWeight < goals.weightGoal
+              ? ` ${(goals.weightGoal - currentWeight).toFixed(1)}kg to gain`
+              : ' Goal reached!'
+            }
+          </div>
+        )}
         {weightChange !== null && (
           <div className={`weight-change ${parseFloat(weightChange) > 0 ? 'up' : parseFloat(weightChange) < 0 ? 'down' : ''}`}>
             <i className={`fas ${parseFloat(weightChange) > 0 ? 'fa-arrow-up' : parseFloat(weightChange) < 0 ? 'fa-arrow-down' : 'fa-minus'}`}></i>

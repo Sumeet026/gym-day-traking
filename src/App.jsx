@@ -11,6 +11,8 @@ import Workout from './pages/Workout';
 import Diet from './pages/Diet';
 import Water from './pages/Water';
 import Weight from './pages/Weight';
+import Goals from './pages/Goals';
+import Reports from './pages/Reports';
 import History from './pages/History';
 import './App.css';
 
@@ -24,8 +26,11 @@ function AppContent() {
 
   const {
     todayData, loading, weekData, weekWaterData, allWeights, streak,
-    getDataForDate, addWorkout, deleteWorkout,
-    addDiet, deleteDietEntry, updateWater, addWeight, deleteWeight
+    goals, monthData, monthDietData, monthWaterData, monthWeightData,
+    getDataForDate, getWeekReport, saveGoals,
+    addWorkout, deleteWorkout,
+    addDiet, deleteDietEntry,
+    updateWater, addWeight, deleteWeight
   } = useFirestore(userId);
 
   const showToast = useCallback((message, type = 'success') => {
@@ -36,7 +41,7 @@ function AppContent() {
     setToast({ message: '', type: 'success' });
   }, []);
 
-  // Not logged in - show auth pages
+  // Not logged in
   if (!currentUser) {
     return showLogin ? (
       <Login onToggle={() => setShowLogin(false)} />
@@ -95,23 +100,26 @@ function AppContent() {
     );
   }
 
-  // Main App
   const renderSection = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <Dashboard todayData={todayData} weekData={weekData} onNavigate={setActiveSection} />;
+        return <Dashboard todayData={todayData} weekData={weekData} goals={goals} onNavigate={setActiveSection} />;
       case 'workout':
         return <Workout todayData={todayData} weekData={weekData} addWorkout={addWorkout} deleteWorkout={deleteWorkout} onToast={showToast} />;
       case 'diet':
-        return <Diet todayData={todayData} addDiet={addDiet} deleteDietEntry={deleteDietEntry} onToast={showToast} />;
+        return <Diet todayData={todayData} addDiet={addDiet} deleteDietEntry={deleteDietEntry} onToast={showToast} goals={goals} />;
       case 'water':
-        return <Water todayData={todayData} updateWater={updateWater} weekWaterData={weekWaterData} />;
+        return <Water todayData={todayData} updateWater={updateWater} weekWaterData={weekWaterData} goals={goals} />;
       case 'weight':
-        return <Weight todayData={todayData} allWeights={allWeights} addWeight={addWeight} deleteWeight={deleteWeight} onToast={showToast} />;
+        return <Weight todayData={todayData} allWeights={allWeights} addWeight={addWeight} deleteWeight={deleteWeight} onToast={showToast} goals={goals} />;
+      case 'goals':
+        return <Goals goals={goals} saveGoals={saveGoals} onToast={showToast} />;
+      case 'reports':
+        return <Reports weekData={weekData} weekWaterData={weekWaterData} monthData={monthData} monthDietData={monthDietData} monthWaterData={monthWaterData} monthWeightData={monthWeightData} goals={goals} getDataForDate={getDataForDate} />;
       case 'history':
         return <History getDataForDate={getDataForDate} />;
       default:
-        return <Dashboard todayData={todayData} weekData={weekData} onNavigate={setActiveSection} />;
+        return <Dashboard todayData={todayData} weekData={weekData} goals={goals} onNavigate={setActiveSection} />;
     }
   };
 

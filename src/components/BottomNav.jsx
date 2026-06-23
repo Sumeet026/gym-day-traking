@@ -5,7 +5,8 @@ export default function BottomNav({ activeSection, onNavigate }) {
     { id: 'diet', icon: 'fa-utensils', label: 'Diet' },
     { id: 'water', icon: 'fa-tint', label: 'Water' },
     { id: 'weight', icon: 'fa-weight', label: 'Weight' },
-    { id: 'history', icon: 'fa-calendar-alt', label: 'History' },
+    { id: 'reports', icon: 'fa-chart-bar', label: 'Reports' },
+    { id: 'goals', icon: 'fa-bullseye', label: 'Goals' },
   ];
 
   return (

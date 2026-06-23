@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
@@ -6,9 +6,14 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function Dashboard({ todayData, weekData, onNavigate }) {
+export default function Dashboard({ todayData, weekData, goals, onNavigate }) {
   const totalCalories = useMemo(() =>
     todayData.diet.reduce((sum, m) => sum + (m.calories || 0), 0),
+    [todayData.diet]
+  );
+
+  const totalProtein = useMemo(() =>
+    todayData.diet.reduce((sum, m) => sum + (m.protein || 0), 0),
     [todayData.diet]
   );
 
@@ -49,6 +54,10 @@ export default function Dashboard({ todayData, weekData, onNavigate }) {
     return items.slice(0, 8);
   }, [todayData]);
 
+  const waterGoal = goals.waterGoal || 8;
+  const caloriesGoal = goals.caloriesGoal || 2000;
+  const proteinGoal = goals.proteinGoal || 150;
+
   return (
     <div className="section active">
       <h2 className="section-title"><i className="fas fa-home"></i> Today's Summary</h2>
@@ -57,14 +66,14 @@ export default function Dashboard({ todayData, weekData, onNavigate }) {
         <div className="stat-card water-stat" onClick={() => onNavigate('water')}>
           <i className="fas fa-tint"></i>
           <div className="stat-info">
-            <span className="stat-value">{todayData.water}</span>
+            <span className="stat-value">{todayData.water}/{waterGoal}</span>
             <span className="stat-label">Glasses</span>
           </div>
         </div>
         <div className="stat-card calories-stat" onClick={() => onNavigate('diet')}>
           <i className="fas fa-fire-alt"></i>
           <div className="stat-info">
-            <span className="stat-value">{totalCalories}</span>
+            <span className="stat-value">{totalCalories}/{caloriesGoal}</span>
             <span className="stat-label">Calories</span>
           </div>
         </div>
@@ -72,7 +81,7 @@ export default function Dashboard({ todayData, weekData, onNavigate }) {
           <i className="fas fa-weight"></i>
           <div className="stat-info">
             <span className="stat-value">{todayData.weight || '--'}</span>
-            <span className="stat-label">kg</span>
+            <span className="stat-label">kg {goals.weightGoal ? `(Goal: ${goals.weightGoal})` : ''}</span>
           </div>
         </div>
         <div className="stat-card workout-stat" onClick={() => onNavigate('workout')}>
@@ -85,31 +94,45 @@ export default function Dashboard({ todayData, weekData, onNavigate }) {
       </div>
 
       <div className="dashboard-card">
-        <h3><i className="fas fa-calendar-day"></i> Today's Overview</h3>
+        <h3><i className="fas fa-bullseye"></i> Goal Progress</h3>
         <div className="overview-grid">
           <div className="overview-item">
             <div className="overview-ring">
               <svg viewBox="0 0 36 36">
                 <path className="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
                 <path className="ring-fill water-color"
-                  strokeDasharray={`${Math.min((todayData.water / 8) * 100, 100)}, 100`}
+                  strokeDasharray={`${Math.min((todayData.water / waterGoal) * 100, 100)}, 100`}
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
               </svg>
-              <span className="ring-text">{Math.round((todayData.water / 8) * 100)}%</span>
+              <span className="ring-text">{Math.round((todayData.water / waterGoal) * 100)}%</span>
             </div>
-            <p>Water (8 glass goal)</p>
+            <p>Water ({todayData.water}/{waterGoal})</p>
           </div>
           <div className="overview-item">
             <div className="overview-ring">
               <svg viewBox="0 0 36 36">
                 <path className="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
                 <path className="ring-fill calories-color"
-                  strokeDasharray={`${Math.min((totalCalories / 2000) * 100, 100)}, 100`}
+                  strokeDasharray={`${Math.min((totalCalories / caloriesGoal) * 100, 100)}, 100`}
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
               </svg>
-              <span className="ring-text">{Math.round((totalCalories / 2000) * 100)}%</span>
+              <span className="ring-text">{Math.round((totalCalories / caloriesGoal) * 100)}%</span>
             </div>
-            <p>Diet (2000 cal goal)</p>
+            <p>Calories ({totalCalories}/{caloriesGoal})</p>
+          </div>
+        </div>
+        <div className="overview-grid" style={{ marginTop: '0.75rem' }}>
+          <div className="overview-item">
+            <div className="overview-ring">
+              <svg viewBox="0 0 36 36">
+                <path className="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path className="ring-fill protein-ring"
+                  strokeDasharray={`${Math.min((totalProtein / proteinGoal) * 100, 100)}, 100`}
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              </svg>
+              <span className="ring-text">{Math.round((totalProtein / proteinGoal) * 100)}%</span>
+            </div>
+            <p>Protein ({totalProtein}g/{proteinGoal}g)</p>
           </div>
         </div>
       </div>

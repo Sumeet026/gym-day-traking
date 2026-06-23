@@ -19,6 +19,21 @@ function getWeekDates() {
   return dates;
 }
 
+function getMonthDates() {
+  const dates = [];
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  for (let i = 1; i <= daysInMonth; i++) {
+    const d = new Date(year, month, i);
+    if (d <= now) {
+      dates.push(getDateStr(d));
+    }
+  }
+  return dates;
+}
+
 export function useFirestore(userId = 'default') {
   const [todayData, setTodayData] = useState({
     workouts: [],
@@ -31,8 +46,34 @@ export function useFirestore(userId = 'default') {
   const [weekWaterData, setWeekWaterData] = useState({});
   const [allWeights, setAllWeights] = useState([]);
   const [streak, setStreak] = useState(0);
+  const [goals, setGoals] = useState({
+    caloriesGoal: 2000,
+    waterGoal: 8,
+    proteinGoal: 150,
+    weightGoal: null
+  });
 
   const today = getDateStr();
+
+  // Subscribe to user goals
+  useEffect(() => {
+    const q = query(
+      collection(db, 'goals'),
+      where('userId', '==', userId)
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      if (!snap.empty) {
+        const data = snap.docs[0].data();
+        setGoals({
+          caloriesGoal: data.caloriesGoal || 2000,
+          waterGoal: data.waterGoal || 8,
+          proteinGoal: data.proteinGoal || 150,
+          weightGoal: data.weightGoal || null
+        });
+      }
+    }, (err) => console.error('Goals error:', err));
+    return unsub;
+  }, [userId]);
 
   // Subscribe to today's workouts
   useEffect(() => {
@@ -126,10 +167,11 @@ export function useFirestore(userId = 'default') {
       const data = {};
       snap.docs.forEach(d => {
         const doc = d.data();
-        if (!data[doc.date]) data[doc.date] = { totalReps: 0, totalSets: 0, exercises: 0 };
+        if (!data[doc.date]) data[doc.date] = { totalReps: 0, totalSets: 0, exercises: 0, names: [] };
         data[doc.date].totalReps += (doc.sets || 0) * (doc.reps || 0);
         data[doc.date].totalSets += (doc.sets || 0);
         data[doc.date].exercises += 1;
+        data[doc.date].names.push(doc.name);
       });
       setWeekData(data);
     }, (err) => console.error('Week data error:', err));
@@ -153,6 +195,79 @@ export function useFirestore(userId = 'default') {
       setWeekWaterData(data);
     }, (err) => console.error('Week water error:', err));
     return unsub;
+  }, [userId]);
+
+  // Subscribe to month data for reports
+  const [monthData, setMonthData] = useState({});
+  const [monthDietData, setMonthDietData] = useState({});
+  const [monthWaterData, setMonthWaterData] = useState({});
+  const [monthWeightData, setMonthWeightData] = useState({});
+
+  useEffect(() => {
+    const monthDates = getMonthDates();
+    if (monthDates.length === 0) return;
+
+    const q1 = query(
+      collection(db, 'workouts'),
+      where('userId', '==', userId),
+      where('date', 'in', monthDates)
+    );
+    const unsub1 = onSnapshot(q1, (snap) => {
+      const data = {};
+      snap.docs.forEach(d => {
+        const doc = d.data();
+        if (!data[doc.date]) data[doc.date] = { totalReps: 0, exercises: 0 };
+        data[doc.date].totalReps += (doc.sets || 0) * (doc.reps || 0);
+        data[doc.date].exercises += 1;
+      });
+      setMonthData(data);
+    }, (err) => console.error('Month workout error:', err));
+
+    const q2 = query(
+      collection(db, 'diet'),
+      where('userId', '==', userId),
+      where('date', 'in', monthDates)
+    );
+    const unsub2 = onSnapshot(q2, (snap) => {
+      const data = {};
+      snap.docs.forEach(d => {
+        const doc = d.data();
+        if (!data[doc.date]) data[doc.date] = { totalCal: 0, meals: 0 };
+        data[doc.date].totalCal += (doc.calories || 0);
+        data[doc.date].meals += 1;
+      });
+      setMonthDietData(data);
+    }, (err) => console.error('Month diet error:', err));
+
+    const q3 = query(
+      collection(db, 'water'),
+      where('userId', '==', userId),
+      where('date', 'in', monthDates)
+    );
+    const unsub3 = onSnapshot(q3, (snap) => {
+      const data = {};
+      snap.docs.forEach(d => {
+        const doc = d.data();
+        data[doc.date] = doc.glasses;
+      });
+      setMonthWaterData(data);
+    }, (err) => console.error('Month water error:', err));
+
+    const q4 = query(
+      collection(db, 'weights'),
+      where('userId', '==', userId),
+      where('date', 'in', monthDates)
+    );
+    const unsub4 = onSnapshot(q4, (snap) => {
+      const data = {};
+      snap.docs.forEach(d => {
+        const doc = d.data();
+        data[doc.date] = doc.weight;
+      });
+      setMonthWeightData(data);
+    }, (err) => console.error('Month weight error:', err));
+
+    return () => { unsub1(); unsub2(); unsub3(); unsub4(); };
   }, [userId]);
 
   // Calculate streak
@@ -203,6 +318,39 @@ export function useFirestore(userId = 'default') {
       return { workouts: [], diet: [], water: 0, weight: null };
     }
   }, [userId]);
+
+  // Get week report data
+  const getWeekReport = useCallback(async (startDate) => {
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(startDate + 'T00:00:00');
+      d.setDate(d.getDate() + i);
+      dates.push(getDateStr(d));
+    }
+    const results = {};
+    for (const dateStr of dates) {
+      results[dateStr] = await getDataForDate(dateStr);
+    }
+    return results;
+  }, [getDataForDate]);
+
+  // Save goals
+  const saveGoals = async (newGoals) => {
+    const q = query(
+      collection(db, 'goals'),
+      where('userId', '==', userId)
+    );
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      await updateDoc(doc(db, 'goals', snap.docs[0].id), newGoals);
+    } else {
+      await addDoc(collection(db, 'goals'), {
+        userId,
+        ...newGoals,
+        createdAt: new Date().toISOString()
+      });
+    }
+  };
 
   // Add workout
   const addWorkout = async (exercise) => {
@@ -276,7 +424,14 @@ export function useFirestore(userId = 'default') {
     weekWaterData,
     allWeights,
     streak,
+    goals,
+    monthData,
+    monthDietData,
+    monthWaterData,
+    monthWeightData,
     getDataForDate,
+    getWeekReport,
+    saveGoals,
     addWorkout,
     deleteWorkout,
     addDiet,

@@ -54,7 +54,7 @@ const MEAL_ICONS = {
   'post-workout': '\u{1F964}'
 };
 
-export default function Diet({ todayData, addDiet, deleteDietEntry, onToast }) {
+export default function Diet({ todayData, addDiet, deleteDietEntry, onToast, goals }) {
   const [mealType, setMealType] = useState('breakfast');
   const [selectedFood, setSelectedFood] = useState('');
   const [customName, setCustomName] = useState('');
@@ -63,6 +63,9 @@ export default function Diet({ todayData, addDiet, deleteDietEntry, onToast }) {
   const [customCarbs, setCustomCarbs] = useState('');
   const [customFat, setCustomFat] = useState('');
   const [deleteId, setDeleteId] = useState(null);
+
+  const caloriesGoal = goals.caloriesGoal || 2000;
+  const proteinGoal = goals.proteinGoal || 150;
 
   const totalCalories = useMemo(() =>
     todayData.diet.reduce((sum, m) => sum + (m.calories || 0), 0),
@@ -146,12 +149,12 @@ export default function Diet({ todayData, addDiet, deleteDietEntry, onToast }) {
       <div className="calorie-counter">
         <div className="calorie-display">
           <span className="calorie-consumed">{totalCalories}</span>
-          <span className="calorie-label">Calories Consumed</span>
+          <span className="calorie-label">of {caloriesGoal} calories</span>
         </div>
         <div className="calorie-bar">
-          <div className="calorie-fill" style={{ width: `${Math.min((totalCalories / 2000) * 100, 100)}%` }}></div>
+          <div className="calorie-fill" style={{ width: `${Math.min((totalCalories / caloriesGoal) * 100, 100)}%` }}></div>
         </div>
-        <span className="calorie-goal">Goal: 2000 cal</span>
+        <span className="calorie-goal">Goal: {caloriesGoal} cal | Remaining: {Math.max(caloriesGoal - totalCalories, 0)} cal</span>
       </div>
 
       <div className="add-form-card">
@@ -242,8 +245,8 @@ export default function Diet({ todayData, addDiet, deleteDietEntry, onToast }) {
         <div className="macro-bars">
           <div className="macro-item">
             <span className="macro-label">Protein</span>
-            <div className="macro-bar"><div className="macro-fill protein-fill" style={{ width: `${Math.min((totalProtein / 150) * 100, 100)}%` }}></div></div>
-            <span className="macro-value">{totalProtein}g</span>
+            <div className="macro-bar"><div className="macro-fill protein-fill" style={{ width: `${Math.min((totalProtein / proteinGoal) * 100, 100)}%` }}></div></div>
+            <span className="macro-value">{totalProtein}/{proteinGoal}g</span>
           </div>
           <div className="macro-item">
             <span className="macro-label">Carbs</span>

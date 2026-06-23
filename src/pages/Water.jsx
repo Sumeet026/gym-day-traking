@@ -1,14 +1,13 @@
 import { useMemo } from 'react';
 
-const GOAL = 8;
-
-export default function Water({ todayData, updateWater, weekWaterData }) {
+export default function Water({ todayData, updateWater, weekWaterData, goals }) {
   const glasses = todayData.water;
-  const percent = Math.min((glasses / GOAL) * 100, 100);
+  const waterGoal = goals.waterGoal || 8;
+  const percent = Math.min((glasses / waterGoal) * 100, 100);
   const circumference = 2 * Math.PI * 45;
 
   const handleAdd = () => {
-    if (glasses < 20) updateWater(glasses + 1);
+    if (glasses < 30) updateWater(glasses + 1);
   };
 
   const handleMinus = () => {
@@ -33,7 +32,7 @@ export default function Water({ todayData, updateWater, weekWaterData }) {
     }));
   }, [weekWaterData]);
 
-  const maxWeekWater = Math.max(...weekWater.map(d => d.glasses), 1);
+  const maxWeekWater = Math.max(...weekWater.map(d => d.glasses), waterGoal);
 
   return (
     <div className="section active">
@@ -53,10 +52,10 @@ export default function Water({ todayData, updateWater, weekWaterData }) {
           </svg>
           <div className="water-center">
             <span className="water-amount">{glasses}</span>
-            <span className="water-unit">glasses</span>
+            <span className="water-unit">of {waterGoal} glasses</span>
           </div>
         </div>
-        <p className="water-goal-text">Goal: {GOAL} glasses ({GOAL * 250}ml)</p>
+        <p className="water-goal-text">Goal: {waterGoal} glasses ({waterGoal * 250}ml)</p>
       </div>
 
       <div className="water-buttons">
@@ -72,7 +71,7 @@ export default function Water({ todayData, updateWater, weekWaterData }) {
       </div>
 
       <div className="water-glasses">
-        {Array.from({ length: GOAL }, (_, i) => (
+        {Array.from({ length: waterGoal }, (_, i) => (
           <div key={i} className={`glass ${i < glasses ? 'filled' : ''}`}>
             <i className="fas fa-glass-whiskey"></i>
             <span>{i + 1}</span>
@@ -86,7 +85,7 @@ export default function Water({ todayData, updateWater, weekWaterData }) {
           {weekWater.map((d, i) => (
             <div key={i} className="weekly-bar-item">
               <div className="bar-container">
-                <div className="bar-fill water-bar" style={{ height: `${(d.glasses / maxWeekWater) * 100}%` }}>
+                <div className={`bar-fill water-bar ${d.glasses >= waterGoal ? 'goal-met' : ''}`} style={{ height: `${(d.glasses / maxWeekWater) * 100}%` }}>
                   <span className="bar-value">{d.glasses}</span>
                 </div>
               </div>

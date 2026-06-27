@@ -6,7 +6,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function Dashboard({ todayData, weekData, goals, onNavigate }) {
+export default function Dashboard({ todayData, weekData, weekWaterData, goals, onNavigate }) {
   const totalCalories = useMemo(() =>
     todayData.diet.reduce((sum, m) => sum + (m.calories || 0), 0),
     [todayData.diet]
@@ -43,9 +43,15 @@ export default function Dashboard({ todayData, weekData, goals, onNavigate }) {
         backgroundColor: 'rgba(16, 185, 129, 0.7)',
         borderRadius: 6,
         borderSkipped: false,
+      }, {
+        label: 'Water (glasses)',
+        data: dates.map(d => weekWaterData[d] || 0),
+        backgroundColor: 'rgba(6, 182, 212, 0.7)',
+        borderRadius: 6,
+        borderSkipped: false,
       }]
     };
-  }, [weekData]);
+  }, [weekData, weekWaterData]);
 
   const recentActivity = useMemo(() => {
     const items = [];

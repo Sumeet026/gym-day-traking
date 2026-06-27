@@ -6,13 +6,13 @@ import DeleteModal from '../components/DeleteModal';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
 const EXERCISES = {
-  'Chest': ['Bench Press', 'Incline Bench Press', 'Decline Bench Press', 'Dumbbell Fly', 'Cable Crossover', 'Push Ups', 'Chest Dip'],
-  'Back': ['Deadlift', 'Pull Ups', 'Barbell Row', 'Lat Pulldown', 'Seated Row', 'T-Bar Row', 'Back Extension'],
-  'Shoulders': ['Overhead Press', 'Lateral Raise', 'Front Raise', 'Reverse Fly', 'Shrugs', 'Arnold Press'],
-  'Arms': ['Bicep Curl', 'Hammer Curl', 'Tricep Pushdown', 'Skull Crushers', 'Preacher Curl', 'Concentration Curl'],
-  'Legs': ['Squat', 'Leg Press', 'Lunges', 'Leg Extension', 'Leg Curl', 'Calf Raise', 'Bulgarian Split Squat'],
-  'Abs': ['Crunches', 'Plank', 'Leg Raise', 'Russian Twist', 'Hanging Leg Raise', 'Ab Wheel Rollout'],
-  'Cardio': ['Running', 'Cycling', 'Jump Rope', 'Swimming', 'Rowing', 'Stair Climber']
+  'Chest': ['Bench Press', 'Incline Bench Press', 'Decline Bench Press', 'Dumbbell Fly', 'Cable Crossover', 'Push Ups', 'Chest Dip', 'Incline Dumbbell Press', 'Decline Dumbbell Press', 'Pec Deck Machine', 'Chest Press Machine', 'Wide Push Ups', 'Close Grip Push Ups', 'Dumbbell Pullover', 'Landmine Press'],
+  'Back': ['Deadlift', 'Pull Ups', 'Barbell Row', 'Lat Pulldown', 'Seated Row', 'T-Bar Row', 'Back Extension', 'Chin Ups', 'Wide Grip Pull Up', 'Narrow Grip Row', 'Single Arm Dumbbell Row', 'Face Pull', 'Rack Pull', 'Good Mornings', 'Bent Over Reverse Fly'],
+  'Shoulders': ['Overhead Press', 'Lateral Raise', 'Front Raise', 'Reverse Fly', 'Shrugs', 'Arnold Press', 'Military Press', 'Upright Row', 'Cable Lateral Raise', 'Rear Delt Fly', 'Push Press', 'Handstand Push Ups', 'Lu Raise', 'Power Jerk'],
+  'Arms': ['Bicep Curl', 'Hammer Curl', 'Tricep Pushdown', 'Skull Crushers', 'Preacher Curl', 'Concentration Curl', 'Incline Dumbbell Curl', 'Cable Curl', 'Spider Curl', 'Tricep Kickback', 'Overhead Tricep Extension', 'Close Grip Bench Press', 'Dips (Triceps)', 'Zottman Curl', 'Bayesian Curl'],
+  'Legs': ['Squat', 'Leg Press', 'Lunges', 'Leg Extension', 'Leg Curl', 'Calf Raise', 'Bulgarian Split Squat', 'Front Squat', 'Romanian Deadlift', 'Hip Thrust', 'Goblet Squat', 'Walking Lunges', 'Step Ups', 'Hack Squat', 'Nordic Curl'],
+  'Abs': ['Crunches', 'Plank', 'Leg Raise', 'Russian Twist', 'Hanging Leg Raise', 'Ab Wheel Rollout', 'Cable Crunch', 'Bicycle Crunch', 'Mountain Climbers', 'V-Ups', 'Flutter Kicks', 'Side Plank', 'Dead Bug', 'Toe Touches', 'Woodchoppers'],
+  'Cardio': ['Running', 'Cycling', 'Jump Rope', 'Swimming', 'Rowing', 'Stair Climber', 'Burpees', 'Jumping Jacks', 'High Knees', 'Box Jumps', 'Battle Ropes', 'Mountain Climber Intervals', 'Sprint Intervals', 'Elliptical', 'Kickboxing']
 };
 
 const ALL_EXERCISES = Object.values(EXERCISES).flat();

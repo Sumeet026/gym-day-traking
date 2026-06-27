@@ -106,7 +106,7 @@ function AppContent() {
   const renderSection = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <Dashboard todayData={todayData} weekData={weekData} goals={goals} onNavigate={setActiveSection} />;
+        return <Dashboard todayData={todayData} weekData={weekData} weekWaterData={weekWaterData} goals={goals} onNavigate={setActiveSection} />;
       case 'workout':
         return <Workout todayData={todayData} weekData={weekData} addWorkout={addWorkout} deleteWorkout={deleteWorkout} onToast={showToast} />;
       case 'diet':
@@ -124,7 +124,7 @@ function AppContent() {
       case 'rules':
         return <Rules rules={rules} dailyChecks={dailyChecks} onSaveRule={saveRule} onDeleteRule={deleteRule} onToggleCheck={toggleDailyCheck} />;
       default:
-        return <Dashboard todayData={todayData} weekData={weekData} goals={goals} onNavigate={setActiveSection} />;
+        return <Dashboard todayData={todayData} weekData={weekData} weekWaterData={weekWaterData} goals={goals} onNavigate={setActiveSection} />;
     }
   };
 

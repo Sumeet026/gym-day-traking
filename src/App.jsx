@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { useFirestore } from './hooks/useFirestore';
+import { useNotifications } from './hooks/useNotifications';
 import Header from './components/Header';
 import BottomNav from './components/BottomNav';
 import Toast from './components/Toast';
@@ -31,10 +32,12 @@ function AppContent() {
     monthData, monthDietData, monthWaterData, monthWeightData,
     getDataForDate, getWeekReport, saveGoals, saveProfile,
     saveRule, deleteRule, toggleDailyCheck,
-    addWorkout, deleteWorkout,
+    addWorkout, deleteWorkout, getLastWorkout,
     addDiet, deleteDietEntry,
     updateWater, addWeight, deleteWeight
   } = useFirestore(userId);
+
+  useNotifications(todayData, rules, dailyChecks);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -108,7 +111,7 @@ function AppContent() {
       case 'dashboard':
         return <Dashboard todayData={todayData} weekData={weekData} weekWaterData={weekWaterData} goals={goals} onNavigate={setActiveSection} />;
       case 'workout':
-        return <Workout todayData={todayData} weekData={weekData} addWorkout={addWorkout} deleteWorkout={deleteWorkout} onToast={showToast} />;
+        return <Workout todayData={todayData} weekData={weekData} addWorkout={addWorkout} deleteWorkout={deleteWorkout} getLastWorkout={getLastWorkout} onToast={showToast} />;
       case 'diet':
         return <Diet todayData={todayData} addDiet={addDiet} deleteDietEntry={deleteDietEntry} onToast={showToast} goals={goals} />;
       case 'water':

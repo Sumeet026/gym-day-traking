@@ -1,11 +1,31 @@
 import { useState, useMemo } from 'react';
 
+const CHALLENGES = [
+  { id: 1, text: 'Do 10 Push-ups!', icon: 'fa-person-running', reps: '10 reps' },
+  { id: 2, text: 'Do 20 Squats!', icon: 'fa-person-walking', reps: '20 reps' },
+  { id: 3, text: 'Hold 30 second Plank!', icon: 'fa-grip-lines', reps: '30 sec' },
+  { id: 4, text: 'Do 15 Burpees!', icon: 'fa-bolt', reps: '15 reps' },
+  { id: 5, text: 'Do 25 Jumping Jacks!', icon: 'fa-star', reps: '25 reps' },
+  { id: 6, text: 'Do 10 Lunges each leg!', icon: 'fa-shoe-prints', reps: '10 each' },
+  { id: 7, text: 'Do 20 Crunches!', icon: 'fa-dumbbell', reps: '20 reps' },
+  { id: 8, text: 'Do 15 Mountain Climbers!', icon: 'fa-mountain', reps: '15 reps' },
+  { id: 9, text: 'Do 10 Tricep Dips!', icon: 'fa-hand-fist', reps: '10 reps' },
+  { id: 10, text: 'Do 20 High Knees!', icon: 'fa-arrow-up', reps: '20 reps' },
+];
+
+function getRandomChallenge() {
+  const idx = Math.floor(Math.random() * CHALLENGES.length);
+  return CHALLENGES[idx];
+}
+
 function getDateStr(date = new Date()) {
   return date.toISOString().split('T')[0];
 }
 
 export default function Rules({ rules, dailyChecks, onSaveRule, onDeleteRule, onToggleCheck }) {
   const [newRule, setNewRule] = useState('');
+  const [currentChallenge, setCurrentChallenge] = useState(() => getRandomChallenge());
+  const [challengeDone, setChallengeDone] = useState(false);
   const today = getDateStr();
 
   const todayChecks = useMemo(() => {
@@ -19,6 +39,15 @@ export default function Rules({ rules, dailyChecks, onSaveRule, onDeleteRule, on
   const completedToday = Object.values(todayChecks).filter(Boolean).length;
   const totalRules = rules.length;
   const progressPercent = totalRules > 0 ? Math.round((completedToday / totalRules) * 100) : 0;
+  const allDone = totalRules > 0 && completedToday === totalRules;
+  const currentHour = new Date().getHours();
+  const isEvening = currentHour >= 17;
+  const showChallenge = totalRules > 0 && !allDone && isEvening && currentChallenge;
+
+  const handleNewChallenge = () => {
+    setCurrentChallenge(getRandomChallenge());
+    setChallengeDone(false);
+  };
 
   const handleAddRule = () => {
     if (newRule.trim()) {
@@ -102,22 +131,60 @@ export default function Rules({ rules, dailyChecks, onSaveRule, onDeleteRule, on
         )}
       </div>
 
-      {totalRules > 0 && (
-        <div className="dashboard-card">
-          <h3><i className="fas fa-trophy"></i> Streak Info</h3>
-          <div className="streak-info-grid">
-            <div className="streak-info-item">
-              <i className="fas fa-check-double"></i>
-              <span className="streak-info-value">{completedToday === totalRules && totalRules > 0 ? '✓' : '—'}</span>
-              <span className="streak-info-label">
-                {completedToday === totalRules && totalRules > 0 ? 'All Done!' : 'Keep Going'}
-              </span>
+      {showChallenge && (
+        <div className={`challenge-card ${challengeDone ? 'completed' : ''}`}>
+          <div className="challenge-header">
+            <i className="fas fa-fire"></i>
+            <h3>Challenge!</h3>
+          </div>
+          <div className="challenge-body">
+            <div className="challenge-icon">
+              <i className={`fas ${currentChallenge.icon}`}></i>
             </div>
-            <div className="streak-info-item">
-              <i className="fas fa-list"></i>
-              <span className="streak-info-value">{totalRules}</span>
-              <span className="streak-info-label">Total Rules</span>
+            <p className="challenge-text">{currentChallenge.text}</p>
+            <span className="challenge-reps">{currentChallenge.reps}</span>
+          </div>
+          <div className="challenge-actions">
+            {!challengeDone ? (
+              <button className="btn btn-accent btn-full" onClick={() => setChallengeDone(true)}>
+                <i className="fas fa-check"></i> Challenge Done!
+              </button>
+            ) : (
+              <div className="challenge-done">
+                <i className="fas fa-trophy"></i>
+                <span>Well done! Now complete your rules!</span>
+              </div>
+            )}
+            <button className="btn btn-secondary btn-full" onClick={handleNewChallenge} style={{ marginTop: '0.5rem' }}>
+              <i className="fas fa-shuffle"></i> New Challenge
+            </button>
+          </div>
+        </div>
+      )}
+
+      {totalRules > 0 && !allDone && !isEvening && (
+        <div className="challenge-card pending">
+          <div className="challenge-header">
+            <i className="fas fa-clock"></i>
+            <h3>Rules Pending</h3>
+          </div>
+          <div className="challenge-body">
+            <p className="challenge-text">Complete all rules before 5 PM or face a challenge!</p>
+          </div>
+        </div>
+      )}
+
+      {totalRules > 0 && allDone && (
+        <div className="challenge-card completed all-done">
+          <div className="challenge-header">
+            <i className="fas fa-trophy"></i>
+            <h3>All Rules Complete!</h3>
+          </div>
+          <div className="challenge-body">
+            <div className="challenge-icon victory">
+              <i className="fas fa-medal"></i>
             </div>
+            <p className="challenge-text">All rules completed! No challenge needed!</p>
           </div>
         </div>
       )}

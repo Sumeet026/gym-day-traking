@@ -411,6 +411,25 @@ export function useFirestore(userId = 'default') {
     await deleteDoc(doc(db, 'workouts', id));
   };
 
+  // Get last workout for a specific exercise
+  const getLastWorkout = useCallback(async (exerciseName) => {
+    try {
+      const q = query(
+        collection(db, 'workouts'),
+        where('userId', '==', userId),
+        where('name', '==', exerciseName)
+      );
+      const snap = await getDocs(q);
+      if (snap.empty) return null;
+      const workouts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      workouts.sort((a, b) => b.date.localeCompare(a.date));
+      return workouts[0];
+    } catch (e) {
+      console.error('Get last workout error:', e);
+      return null;
+    }
+  }, [userId]);
+
   // Add diet
   const addDiet = async (meal) => {
     await addDoc(collection(db, 'diet'), {
@@ -537,6 +556,7 @@ export function useFirestore(userId = 'default') {
     toggleDailyCheck,
     addWorkout,
     deleteWorkout,
+    getLastWorkout,
     addDiet,
     deleteDietEntry,
     updateWater,

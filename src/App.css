@@ -2326,3 +2326,242 @@ body {
   font-size: 0.7rem;
   color: var(--text-muted);
 }
+
+/* ============ CHALLENGE CARD ============ */
+.challenge-card {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.15), rgba(245, 158, 11, 0.1));
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  animation: fadeIn 0.3s ease;
+}
+
+.challenge-card.completed {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.challenge-card.all-done {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.challenge-card.pending {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.challenge-card.pending .challenge-header i {
+  color: var(--accent-blue);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.challenge-card.pending .challenge-header h3 {
+  color: var(--accent-blue);
+}
+
+.challenge-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.challenge-header i {
+  font-size: 1.3rem;
+  color: var(--accent-rose);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.challenge-card.completed .challenge-header i,
+.challenge-card.all-done .challenge-header i {
+  color: var(--accent-emerald);
+  animation: none;
+}
+
+.challenge-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent-rose);
+  margin: 0;
+}
+
+.challenge-card.completed .challenge-header h3,
+.challenge-card.all-done .challenge-header h3 {
+  color: var(--accent-emerald);
+}
+
+.challenge-body {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.challenge-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(245, 158, 11, 0.15));
+  border: 2px solid rgba(244, 63, 94, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+}
+
+.challenge-icon i {
+  font-size: 1.8rem;
+  color: var(--accent-rose);
+}
+
+.challenge-icon.victory {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.challenge-icon.victory i {
+  color: var(--accent-amber);
+}
+
+.challenge-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.challenge-reps {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--bg-primary);
+  padding: 0.2rem 0.75rem;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.challenge-actions {
+  margin-top: 0.75rem;
+}
+
+.challenge-done {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: var(--radius-sm);
+  color: var(--accent-emerald);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.challenge-done i {
+  font-size: 1.1rem;
+  color: var(--accent-amber);
+}
+
+/* ============ LAST WORKOUT CARD ============ */
+.last-workout-card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+}
+
+.last-loading {
+  text-align: center;
+  padding: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.last-loading i {
+  margin-right: 0.5rem;
+  color: var(--accent-indigo);
+}
+
+.last-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.last-header i {
+  color: var(--accent-indigo);
+}
+
+.last-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.last-stat {
+  text-align: center;
+  padding: 0.5rem;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.last-stat-value {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent-indigo);
+}
+
+.last-stat-label {
+  display: block;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.progress-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.progress-badge.up {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-emerald);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.progress-badge.down {
+  background: rgba(244, 63, 94, 0.15);
+  color: var(--accent-rose);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+.progress-badge.same {
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.last-empty {
+  text-align: center;
+  padding: 0.75rem;
+  color: var(--accent-emerald);
+  font-size: 0.85rem;
+}
+
+.last-empty i {
+  margin-right: 0.5rem;
+  font-size: 1rem;
+}

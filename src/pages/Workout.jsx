@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import DeleteModal from '../components/DeleteModal';
@@ -17,7 +17,7 @@ const EXERCISES = {
 
 const ALL_EXERCISES = Object.values(EXERCISES).flat();
 
-export default function Workout({ todayData, weekData, addWorkout, deleteWorkout, onToast }) {
+export default function Workout({ todayData, weekData, addWorkout, deleteWorkout, getLastWorkout, onToast }) {
   const [mode, setMode] = useState('quick');
   const [exerciseName, setExerciseName] = useState('');
   const [sets, setSets] = useState('');
@@ -26,6 +26,27 @@ export default function Workout({ todayData, weekData, addWorkout, deleteWorkout
   const [notes, setNotes] = useState('');
   const [deleteId, setDeleteId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [lastWorkout, setLastWorkout] = useState(null);
+  const [loadingLast, setLoadingLast] = useState(false);
+
+  const fetchLastWorkout = useCallback(async (name) => {
+    if (!name) {
+      setLastWorkout(null);
+      return;
+    }
+    setLoadingLast(true);
+    const last = await getLastWorkout(name);
+    setLastWorkout(last);
+    setLoadingLast(false);
+  }, [getLastWorkout]);
+
+  useEffect(() => {
+    if (exerciseName) {
+      fetchLastWorkout(exerciseName);
+    } else {
+      setLastWorkout(null);
+    }
+  }, [exerciseName, fetchLastWorkout]);
 
   const filteredExercises = ALL_EXERCISES.filter(ex =>
     ex.toLowerCase().includes(searchTerm.toLowerCase())
@@ -172,6 +193,52 @@ export default function Workout({ todayData, weekData, addWorkout, deleteWorkout
               </select>
             )}
           </div>
+
+          {exerciseName && (
+            <div className="last-workout-card">
+              {loadingLast ? (
+                <div className="last-loading">
+                  <i className="fas fa-spinner fa-spin"></i> Loading previous data...
+                </div>
+              ) : lastWorkout ? (
+                <>
+                  <div className="last-header">
+                    <i className="fas fa-clock-rotate-left"></i>
+                    <span>Last Session ({new Date(lastWorkout.date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })})</span>
+                  </div>
+                  <div className="last-stats">
+                    <div className="last-stat">
+                      <span className="last-stat-value">{lastWorkout.sets}x{lastWorkout.reps}</span>
+                      <span className="last-stat-label">Sets x Reps</span>
+                    </div>
+                    <div className="last-stat">
+                      <span className="last-stat-value">{lastWorkout.weight}kg</span>
+                      <span className="last-stat-label">Weight</span>
+                    </div>
+                    <div className="last-stat">
+                      <span className="last-stat-value">{lastWorkout.sets * lastWorkout.reps * lastWorkout.weight}kg</span>
+                      <span className="last-stat-label">Volume</span>
+                    </div>
+                  </div>
+                  {weight && parseFloat(weight) > 0 && (
+                    <div className={`progress-badge ${parseFloat(weight) > lastWorkout.weight ? 'up' : parseFloat(weight) < lastWorkout.weight ? 'down' : 'same'}`}>
+                      <i className={`fas ${parseFloat(weight) > lastWorkout.weight ? 'fa-arrow-up' : parseFloat(weight) < lastWorkout.weight ? 'fa-arrow-down' : 'fa-equals'}`}></i>
+                      <span>
+                        {parseFloat(weight) > lastWorkout.weight && `+${(parseFloat(weight) - lastWorkout.weight).toFixed(1)}kg Progress!`}
+                        {parseFloat(weight) < lastWorkout.weight && `${(parseFloat(weight) - lastWorkout.weight).toFixed(1)}kg Decreased`}
+                        {parseFloat(weight) === lastWorkout.weight && 'Same Weight'}
+                      </span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="last-empty">
+                  <i className="fas fa-seedling"></i>
+                  <span>First time doing this exercise! Let's go!</span>
+                </div>
+              )}
+            </div>
+          )}
           <div className="form-row">
             <div className="form-group">
               <label>Sets</label>
